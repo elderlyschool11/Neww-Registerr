@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Sarabun", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #06C755;
+}
+
+@layer base {
+  body {
+    @apply text-slate-800 bg-[#F4F7F6];
+  }
+}

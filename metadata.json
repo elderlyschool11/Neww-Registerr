@@ -1,0 +1,6 @@
+{
+  "name": "ElderlyCare Registration",
+  "description": "ระบบลงทะเบียนข้อมูลผู้สูงอายุ (Elderly Registration System) ออกแบบมาให้ใช้งานง่าย รองรับ LINE LIFF และเชื่อมต่อ Google Sheets",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

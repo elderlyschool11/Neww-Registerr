@@ -54,17 +54,22 @@ export default function App() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
+  console.log('App Rendering');
+
   // Initialize LIFF
   useEffect(() => {
+    console.log('Initializing LIFF...');
     const initLiff = async () => {
       const liffId = (import.meta as any).env.VITE_LIFF_ID;
+      console.log('LIFF ID:', liffId);
       if (!liffId) {
-        setLiffError('ไม่พบ LIFF ID ในการตั้งค่า');
+        setLiffError('ไม่พบ LIFF ID ในการตั้งค่า (.env)');
         return;
       }
 
       try {
         await liff.init({ liffId });
+        console.log('LIFF initialized successfully');
         if (liff.isLoggedIn()) {
           const profileData = await liff.getProfile();
           setProfile({
@@ -72,14 +77,10 @@ export default function App() {
             displayName: profileData.displayName,
             pictureUrl: profileData.pictureUrl,
           });
-        } else {
-          // If not logged in and not in LINE browser, we might want to login
-          // but for demo, we'll just handle it gracefully
-          console.warn('User not logged in LIFF');
         }
       } catch (err) {
         console.error('LIFF init failed', err);
-        setLiffError('ไม่สามารถเชื่อมต่อกับ LINE ได้');
+        setLiffError('ไม่สามารถเชื่อมต่อกับ LINE ได้: ' + (err instanceof Error ? err.message : String(err)));
       }
     };
 
@@ -149,6 +150,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#F4F7F6]">
+      <div style={{ padding: '4px', background: '#fbbf24', color: '#000', textAlign: 'center', fontSize: '10px', fontWeight: 'bold' }}>
+        DEBUG MODE: {profile ? `Logged in as ${profile.displayName}` : 'Guest'} | LIFF: {liffError ? 'Error' : 'OK'}
+      </div>
       {/* Header Section */}
       <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-10 shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-4">
@@ -221,12 +225,9 @@ export default function App() {
 
         {/* Form Container */}
         <div className="flex-1 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col min-h-0">
-          <AnimatePresence mode="wait">
+          <div className="flex-1 flex flex-col">
             {status === 'success' ? (
-              <motion.div 
-                key="success"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+              <div 
                 className="flex-1 flex flex-col items-center justify-center p-10 text-center gap-6"
               >
                 <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center ring-8 ring-emerald-50/50">
@@ -242,14 +243,10 @@ export default function App() {
                 >
                   ปิดหน้าต่างและกลับไปที่ LINE
                 </button>
-              </motion.div>
+              </div>
             ) : (
-              <motion.form 
-                key="form"
+              <form 
                 onSubmit={handleSubmit}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 className="flex-1 flex flex-col p-6 md:p-10"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -391,9 +388,9 @@ export default function App() {
                     </button>
                   </div>
                 </div>
-              </motion.form>
+              </form>
             )}
-          </AnimatePresence>
+          </div>
         </div>
       </main>
 

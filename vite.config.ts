@@ -6,9 +6,11 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // สำคัญ: ต้องเป็น './' เพื่อให้ทำงานบน GitHub Pages ได้ถูกต้อง
-    base: './', 
+    base: '/', 
     plugins: [react(), tailwindcss()],
+    define: {
+      'process.env': env,
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

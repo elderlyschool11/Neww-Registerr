@@ -59,11 +59,12 @@ export default function App() {
   // Initialize LIFF
   useEffect(() => {
     const initLiff = async () => {
-      // ดึงค่าจาก environment variables (หรือใส่ลงในไฟล์ .env ตอน build)
-      const liffId = (import.meta as any).env.VITE_LIFF_ID;
+      // ดึงค่าจาก environment variables
+      const liffId = import.meta.env.VITE_LIFF_ID;
       
       if (!liffId || liffId === 'YOUR_LIFF_ID') {
-        setLiffError('กรุณาตั้งค่า LIFF ID ในไฟล์ .env หรือการตั้งค่าของ GitHub');
+        console.error('LIFF ID is missing');
+        setLiffError('กรุณาตั้งค่า LIFF ID');
         return;
       }
 
@@ -101,7 +102,7 @@ export default function App() {
     setStatus('submitting');
     setErrorMessage('');
 
-    const gasUrl = (import.meta as any).env.VITE_GAS_URL;
+    const gasUrl = import.meta.env.VITE_GAS_URL;
     if (!gasUrl || gasUrl === 'https://script.google.com/macros/s/.../exec') {
       setStatus('error');
       setErrorMessage('กรุณาตั้งค่า URL ของ Google Apps Script');

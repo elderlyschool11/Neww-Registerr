@@ -58,18 +58,17 @@ export default function App() {
 
   // Initialize LIFF
   useEffect(() => {
-    console.log('Initializing LIFF...');
     const initLiff = async () => {
+      // ดึงค่าจาก environment variables (หรือใส่ลงในไฟล์ .env ตอน build)
       const liffId = (import.meta as any).env.VITE_LIFF_ID;
-      console.log('LIFF ID:', liffId);
-      if (!liffId) {
-        setLiffError('ไม่พบ LIFF ID ในการตั้งค่า (.env)');
+      
+      if (!liffId || liffId === 'YOUR_LIFF_ID') {
+        setLiffError('กรุณาตั้งค่า LIFF ID ในไฟล์ .env หรือการตั้งค่าของ GitHub');
         return;
       }
 
       try {
         await liff.init({ liffId });
-        console.log('LIFF initialized successfully');
         if (liff.isLoggedIn()) {
           const profileData = await liff.getProfile();
           setProfile({
@@ -77,10 +76,15 @@ export default function App() {
             displayName: profileData.displayName,
             pictureUrl: profileData.pictureUrl,
           });
+        } else {
+          // หากไม่ได้เปิดใน LINE ให้ Login (กรณีเปิดผ่าน Browser ปกติ)
+          if (!liff.isInClient()) {
+            liff.login();
+          }
         }
       } catch (err) {
         console.error('LIFF init failed', err);
-        setLiffError('ไม่สามารถเชื่อมต่อกับ LINE ได้: ' + (err instanceof Error ? err.message : String(err)));
+        setLiffError('ไม่สามารถเชื่อมต่อกับ LINE ได้ ตรวจสอบ LIFF ID ของคุณ');
       }
     };
 
@@ -150,9 +154,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#F4F7F6]">
-      <div style={{ padding: '4px', background: '#fbbf24', color: '#000', textAlign: 'center', fontSize: '10px', fontWeight: 'bold' }}>
-        DEBUG MODE: {profile ? `Logged in as ${profile.displayName}` : 'Guest'} | LIFF: {liffError ? 'Error' : 'OK'}
-      </div>
       {/* Header Section */}
       <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-10 shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-4">
